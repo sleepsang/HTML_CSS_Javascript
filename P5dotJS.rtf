@@ -1,0 +1,285 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red217\green11\blue0;\red59\green0\blue164;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww28600\viewh16520\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs24 \cf2 P5.JS\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 _______\
+schiffman tutorials - foundations of programming in javascript, explained using P5. \
+WHERE WE AT- 6.9 - 27/04/17\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _SETTING UP A SERVER, WORKFLOW_\cf0 \
+**OLD**\
+give permissions to initialise local server to host (working )p5.js sketch:\
+\
+sudo chown root:</Users/JamesR> -R /Library/WebServer/Documents/\
+\
+then:\
+\
+sudo chmod -R 755 /Library/WebServer/Documents\
+\
+this can then allow to update and preview sketch in browser.\
+**OLD**\
+\
+A better way to use can run a node server, etc\'85\
+\
+installed p5 manager using node package manager, explanation of how to do all of this, and use the p5manager, at {\field{\*\fldinst{HYPERLINK "https://www.youtube.com/watch?v=HZ4D3wDRaec"}}{\fldrslt https://www.youtube.com/watch?v=HZ4D3wDRaec}}\
+\
+the terminal command to make a new project folder in whatever directory you are in at that time is \
+$ p5 generate -b myProjectName\
+\
+next we can open the files in Atom (or whatever text editor) by opening the full folder. \
+\
+after this we can create a localserver (to check our sketch works fine in a browser) by using any of the following:\
+\
+$ http-server \
+$ python -m SimpleHTTPServer \
+\
+then just open chrome or whatever and go to the right port\
+\
+localhost:8080 etc\
+\
+alternatively, i just added atom-live-server package to atom which can be used fo live updates of the sketch. (although a bug is stopping it from showing on packages for some reason)\
+also, when debugging remember to tick the box on chrome javascript console settings that says \'93disable cache when console is open\'94 or live updating could run into issues\
+\
+\
+\cf3 _SETUP_\cf0 \
+only happens once at beginning of program\
+put background in setup only draws once - does not create illusion of clearing objects drawn in draw loop\
+\
+\cf3 _DRAW_\cf0 \
+loops constantly (60fps)\
+order of operations is important!\
+\
+\cf3 _COMMENTS_\cf0 \
+same as normal js\
+to fast comment a block of code in the p5.js compiler (unsupported) highlight and //\
+\
+\cf3 _OBJECTS_\cf0 \
+var thing = \{\
+    x:100,\
+    y:100,\
+display : function () \{\
+	ellipse(this.x,this.y,10,10);\
+\}\
+\}\
+\
+thing becomes an OBJECT containing key/value pairs accessible through dot notation:\
+console.log thing.x; will evaluate to 100. \
+\
+Objects can contain functions within them, making them the powerful building blocks of object-oriented programming. \
+\
+an object with name/value pairs is a LITERAL object (object literal notation). it\'92s properties are defined and unchangeable - \'91enclosed in a tidy package\'92, compared to using a constructor function to make a new object where it can have \'91behaviour\'92 within it\'92s data. (see error message: don\'92t put functions inside an object). an object can be stored in an array - which is a list of objects. arrays are themselves a type of object - and have properties accessible through dot notation - e.g., array.length \'85\
+\
+\cf3 _THIS_\cf0 \
+remember that in JS, within an object, to use a value that has already been assigned ( x : 500 ) we would use the THIS keyword. so instead of calling it using objectname.x which is how we would access that value outside the object, we use this.x  .\
+\
+\cf3 _FUNCTIONS_\cf0 \
+modularity / reusability\'85\
+\
+defining:\
+function name(parameter1,parameter2) \{\
+stuff;\
+\}\
+\
+calling:\
+name(argument1, argument2);\
+\
+return(value); - is ur friend\
+\
+functions inside of objects - pass the arguments thru to the function inside an object using ~THIS~ as the variables are local. an object can contain both data and functionality through the use of functions. this is \'91object oriented\'92. THIS is a keyword which refers to that object in which it is used: \
+\
+var ting = \{\
+x: 100,\
+y: 100,\
+drawTing: function()\{\
+	ellipse(this.x,this.y,20,20);\
+\}\
+\}\
+\
+access like this:\
+ting.drawTing();\
+\
+ok i just repeated the thing about ~THIS~ twice but it is important\'85\
+\
+\cf3 _CONSTRUCTOR FUNCTIONS_\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 a special kind of function in order to create an object with modularity\'85 to avoid simply writing \'91too much\'92 in setup, or draw, create functions outside of them. constructor functions allow us to make new objects in different parts of the code, and the constructor function is REUSABLE. the constructor part of the function allows us to iterate that creation across seperate new objects, with the same properties and functions. \
+\
+function Bubble() \{\
+	this.x = 100;\
+	this.y = 100;\
+\
+this.display = function() \{\
+	\'85.\
+\}\
+this.move  = function() \{\
+	\'85.\
+\}\
+\}\
+\
+the convention for naming constructor functions is that the name is capitalised! the NEW keyword (operator) is a way of telling javascript you want the function to make a new object. when the new instance of that object is made, the keyword THIS then allows it to attach the property given in the constructor to the newly made object. \
+we can then re-write the code so that the values of x or y are not static. then we have display and move functions which are LOCAL to that object. \
+\
+the constructor function does not need a return call inside of itself, as when it is created/called it will automatically return values to that place in the code. \
+\
+when we define a constructor function with ARGUMENTS (e.g. x and y):\
+\
+function Bubble(x,y) \{\
+this.x = x;\
+this.y = y;\
+\}\
+\
+they act as placeholders waiting to be filled by whatever PARAMETERS are given to them whenever the constructor function is called. when it is called\'85 new Bubble(mouseX, mouseY); the x and y arguments then simply pass on the parameters to the keyword THIS - hence the confusing syntax of \'93 this.x = x; \'93.\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _ARRAYS_\cf0 \
+index ordered list of elements, dynamically changeable. arrays can store any type of data or object and are dynamic - i.e. they can be changed and added to \'91on the fly\'92 - for example by user interaction. array properties such as length, or number of elements, are accessed through functions such as getLength(array) array.length ??? and P5 has several useful array functions built in such as shuffle(). you can use a for loop to iterate over every element in an array. \
+\
+var arrae = [1,2,3,4]; counted from 0. arrae[0] = 1.\
+\
+an array can be initialised \'91empty\'92, in order to contain object(s). again this is powerful for iteration. an array containing object(s) is therefore modular, in the sense that it has reusable parts, functions, attributes / properties. \
+an array can be resized to dynamically add or remove data / objects. \
+\
+push() = append an item to the end of the array, increasing its size by one element. \
+\
+splice(#,n) = delete an element (at index #) from the array - then also delete, counting from and including that index, n number of elements.  so if the array was [1,2,3,4,2,3,4] \'85 splice(0,4) would completely clear the array. if we are adding objects to the array using push, they will be appended to the end, meaning the \'91oldest\'92 elements in the array will be at the start. so therefore, splice(0,1) is a convenient way to \'91clear\'92 an arrays \'91history\'92.  \
+\
+the index (where in the array list something is) of an array is commonly represented by [i] - often used within a function to manipulate a specific index. for (var i = 0; i < arrae.length; i++) \{ arrae[i].update(); \}    \'85etc.\
+\
+be careful when looping through an array and modifying it at the same time. when using splice to chop an index - say index 2 - from an array, the index is shortened before the loop continues to check what it thinks is the next index, index 3. But as the array has been shortened this moves all the elements to the right of index 2, one index to the left. What was at 3, is now at 2. this means that because the loop has already looked at index 2, the loop will not \'91check\'92 the index which is now in that position in the array, missing it out. this particular case can be solved by looping through the array BACKWARDS instead of forwards:\
+\
+for (var i = arrae.length - 1; i >=0; i - -) \{\
+\} \'85backward\
+\
+for (var i = 0; i < arrae.length; i++) \{\
+\} \'85forward \
+\
+\cf3 _COLOUR AND SHAPE_\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 background() R G B . obvious\
+fill() ( R, G, B ) - 0 - 255, all same number is a grayscale color e.g. - (0,0,0) = black\
+optional fourth argument is transparency (alpha). noFill() ...\
+stroke() - line colour - outlines noStroke() ...\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _CONDITIONALS and BOOLEANS_\cf0 \
+if, else if, else if, else if, else\'85\
+order of operations is very important because as soon as a condition is met (evaluates to true) the compiler exits the if statement and goes on to the next block of code. \
+\
+and = &&\
+or = || \
+not = !\
+on or off, one or zero, yes or no = true / false (booleans)\
+\
+Change of state tricks:\
+don\'92t forget multiplying a number by -1 will change it\'92s sign (positive or negative) \
+e.g. direction = direction * -1; in this instance used as a switch to change direction of an object on the canvas.\
+ \
+to create the same switching / toggle effect at a trigger, use boolean logic. the following will evaluate from true to false or vice-versa depending on the condition of the variable \'91on\'92 when the mouse is pressed. \
+~ ~ ~ ~ ~ \
+var on = false;\
+function mousePressed() \{\
+on = !on;\
+\}\
+~ ~ ~ ~ ~\
+\
+\cf3 _MULTIPLE JS FILES_\cf0 \
+go inside the html file in ur project folder, and add html link tags in the head, to link multiple js pages to each other. useful in order to keep large messy blocks of code, such as constructor functions or big objects separate from the main file. this is the html link tag for a file named constructorfunction.js - make sure it is all saved in the project folder. \
+\
+<script src=\'93constructorfunction.js\'94 type=\'93text/javascript\'94></script>\
+\
+\cf3 _MATHINESS_\cf0 \
+incrementation  ++  ,  - - etc: up or down by 1\
+x = x + 10; is same as x += 10;\
+Math.floor(random(0,100)) = random whole number between 0 and 100 (random returns floating point)\
+\
+_\cf3 WHILE + FOR_\cf0 \
+for runs once then exits but while runs over and over while condition is met / true\
+nesting for loops together is a powerful way to iterate. e.g - make a grid / colour gen\
+\'93for every X do every Y\'94. a loop is a method for counting and repeating a task. \
+\
+\cf3 _EVENTS_\cf0 \
+an event is a block of code which runs, independent of any other order of operations / sequentiality, when a condition is met. an example is the function mousePressed(), which checks if the mouse has been clicked once and fires off the block of code inside the function. the boolean version of this, mouseIsPressed = (true or false); is a better way to test if the mouse button is being held instead of clicked only once, because it will not continually fire off that event. \
+\
+\cf3 _MOUSE PRESSED_\cf0 \
+mousePressed() is a p5 specific function which is handled as an event. using the form:\
+\
+function mousePressed() \{\
+bubble.move;\
+\} \
+\
+we can call the move function of bubble. this code, as it is an event, does not need to be inside draw or setup. \
+\
+\cf3 _DIST_\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 dist is a special p5 keyword which measures the distance between two points. here is a function which will return that value: \
+var d = dist(x,y,mouseX,mouseY) \
+which is useful for checking something like if a mouse click is within the area of a circle (d would be < the radius).\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _COLLISION_\cf0 \
+detection + resolution. \
+if distance between circles < sum of both radii, they are touching. \
+\
+var r = 10;\
+var d = dist (xa, ya, xb, yb);\
+if (d < ra + rb) \{\
+ 	do something	\
+\}  etc\'85\
+\
+add collision calculation as function local to the thing working with, make generic \'93intersects\'94 function. \
+\
+// (inside the constructor function block of code for our object, normally in another file for clarity)\
+this.intersects = function(other) \{            <<< makes function generic, will apply to any object \
+var d = dist(this.x,this.y,other.x,other.y)\
+if d < this.r + other.r \{\
+	return true;\
+   \}	  \{ else return false;\
+\}	\
+\}\
+\
+// (inside main block of code, alongside update, move, draw functions etc)\
+if (b1.intersects(b2) )\{\
+	do something\
+\} \
+\
+\cf3 _ARRAY OF OBJECTS - MULTIPLE COLLISIONS, SEVERAL CONDITIONS: NESTED LOOPS_\cf0 \
+when there are a lot of different bubbles, we have to detect collisions between every bubble - not just a and b, c and d, but a and d, c and b, etc; ignoring cases of checking against itself. as we are already keeping track of the location of bubbles, by looping through the array for update and display, we create a collision detection for loop inside this loop. make sure to use a different letter for this loop instead of just [i]\
+\
+var bubbles = [];\
+\
+function setup() \{\
+// generic for loop to populate our array with N number of bubbles\
+	for (var i =0: i < N; i++) \{\
+		bubbles[i] = new Bubble(random(width), random(height));\
+	\}\
+\}\
+\
+function draw() \{ \
+	background(0);\
+	for (var i = 0; i < bubbles.length; i++) \{                                           // main loop, probably should run through the array backwards lol \
+	bubbles[i].update;\
+	bubbles[i].display;\
+		for (var j = 0; j < bubbles.length; j++) \{\
+			if ( i != j && bubbles[i].intersects(bubbles[j]) ) \{          // sub loop, triggering each time through the main loop, checking the i against all \'93others\'94 - the j\'92s.  as long as i and j are not the same bubble, check if they intersect. if they intersect perform function\
+				bubbles[i].doSomething;\
+				bubbles[j].doSomething;\
+			\}\
+		\}\
+	\}\
+\} \
+\
+nested loops are essential for checking dualities between things in code - for instance, for every column check every row etc. \
+\
+\cf3 _IMAGES_\cf0 \
+\
+\
+\
+\cf3 _MASK_\cf0 \
+matrices arrays etc\
+\
+}

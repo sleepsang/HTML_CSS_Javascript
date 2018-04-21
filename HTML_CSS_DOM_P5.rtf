@@ -1,0 +1,662 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red217\green11\blue0;\red59\green0\blue164;\red198\green50\blue253;
+\red174\green0\blue240;\red102\green177\blue50;\red255\green118\blue111;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww28600\viewh16520\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs24 \cf2 HTML_CSS_DOM_P5\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 _______\
+schiffman tutorials - foundations of html + css; with special reference to {\field{\*\fldinst{HYPERLINK "https://p5js.org/reference/"}}{\fldrslt P5.JS library}}, and {\field{\*\fldinst{HYPERLINK "https://p5js.org/reference/#/p5.Element"}}{\fldrslt extended DOM library}}.\
+test and make stuff on /Users/JamesR/Documents/Work/Web_Coding_ETC/sleepsang !!!!\
+*ES6* instead of using var all the time, best practice is to use const for static / global variables and let when variable needs to be changeable (dynamic / local). this saves memory and speeds stuff up\
+WHERE WE AT- 8.14 - \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _GENERAL NOTES ABOUT P5_\cf0 \
+\
+\cf3 _STRUCTURE_\cf0 \
+\
+The <head> tags should contain links to any libraries used. \
+HTML can be thought of as a \'91tree structure\'92 - multiple branching nodes (tags) hanging off the trunk - which are the <html> </html> tags. \
+Tags can be given an ID - elements can then be referred to & manipulated by js, jquery etc. \
+\
+\cf3 _DOM_\cf0 \
+\
+the DOM is the document object model, sort of like the thing that draws out the html or something (it is confusing). a DOM element is anything inside html tags. \
+\
+\cf3 _P5 - create()_\cf0 \
+\
+using p5.js, we can add stuff to the .js file, which can add things to our html file:\
+\
+createP() - paragraph\
+createDiv() - divider\
+createButton()\
+createImg() \
+etc.\
+\
+all require different arguments to work. createP for instance requires a string \'93 \'93 .\
+not all html elements (<p>, <div> etc\'85) are represented with their own createX() function in p5 (because there are a lot of them!) \
+However the general function - createElement(\'91elementname\'92,attribute or parameter) - can be used to refer to any HTML element. \
+\
+\cf3 _MANIPULATING POSITION + CONTENT OF ELEMENTS WITH P5_\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 without actually going deep into CSS, we can start to move things around the page with p5. when we use the create() function, we are actually making an object.\
+because it is an object, it can be manipulated using js - stored in a variable, and changed. \
+HTML has a natural \'91flow\'92 which is to say a vertical \'91document\'92 layout, which will automatically position things according to this hierarchical structure. \
+However we can use the position() function - to give our elements and objects an absolute position on the page. \
+\
+var canvas;\
+var h1;\
+\
+function setup() \{\
+	canvas = createCanvas(500,500);    				
+\i \cf4 // create 500 x 500 canvas
+\i0 \cf0 \
+	canvas.position(400,250);              				 
+\i \cf5 // move canvas over 400 and down 250 on the page
+\i0 \cf0 \
+	h1 = createElement(\'91h1\'92,\'94title\'94);       				
+\i \cf5 // create a header 1 element on the page - but inside the canvas - and fill it with the string title.
+\i0 \cf0 \
+	h1.position(400,100);							
+\i \cf5 // move the h1 around INSIDE the canvas (not the page) - 400 px across on the canvas, 100 down. .position() is relative to the canvas unless called on canvas itself, as we are using p5.js.
+\i0 \cf0 \
+\}\
+\
+creating a little \'91title\'92 using p5, and then moving it around on the page. we can also use the html() function to change the content within elements.\
+In this example, the h1 tag contains the word \'93title\'94. however if we were to add a mousePressed function, and call h1.html(\'93new title\'94)\'85\
+\
+function mousePressed() \{\
+	h1.html(\'93new title\'94);                    \
+\}\
+\
+\'85it will change the content of the html tag when pressed. \
+\
+an important thing to note is that everything that uses p5.js code is drawn on the canvas - however, any DOM elements will be drawn relative to their position on the \'91document\'92 flow.\
+This means that if we put a html tag inside draw and start moving it around somehow, it will change relative to the top left, top to bottom, vertical layout of our page.  \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _CALLBACKS + DOM EVENTS_\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 callbacks are a way to bind js code to a particular action or event. for instance, clicking a button on a screen. the createButton() p5 function creates a clickable button html element. \
+the p5.dom.js library extends the functionality of p5 objects, such as mousePressed() , to be able to interact with any DOM element. we can combine this usefully with createButton() by storing it\'92s result in a variable. \
+when we store in a variable it is given an identifying name, which we can then \'91callback\'92 to, meaning that the background colour will only change when we click inside the button, and not just anywhere on the page. \
+\
+var button;\
+var bgcolor;\
+\
+function setup \{\
+	button = createButton(\'93button text goes here\'94);\
+	button.mousePressed(changeColour);			
+\i \cf5 // mousePressed \'91calling back\'92 to the result of our createButton function - only execute function changeColour if mouse is pressed inside the button.
+\i0 \cf0 \
+	bgcolor = color(200);\
+\}\
+\
+function changeColour \{\
+	bgcolor = color(random(255));\
+\}\
+\
+function draw \{\
+	background(bgcolor);\
+\}\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _SLIDERS, BUTTONS + TEXT INPUT_\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 \
+createSlider() is a p5 object which summons up a default HTML canvas - not one that is specifically from P5. This is the same slider that will be created when you add it in the HTML code. \
+createSlider(min,max,start value) is the form that it takes. The value() function, similar to the html() and position() elements, returns the current value of the slider. \
+In order to return, it needs to be added through a variable, from which we can control the value of another object. \
+draw is a constant loop, so in the following example, every time the circle is drawn it will call the value from the slider to change the size. \
+\
+a text input field is a box where the user can type in text. createInput() function creates a text input field. The value() function again can be used to return the current value (string) of the input field.\
+in the following example this is used to dynamically change the text in a seperate text() object on the canvas. \
+\
+var slider;\
+var input;\
+\
+function setup() \{\
+	slider = createSlider(10,100,50); 				
+\i \cf5 // create slider relative to any other divs or paragraph breaks in setup, arguments : (min,max,start value)
+\i0 \cf0 \
+	input = createInput(\'91type your name\'92);\
+\}\
+\
+function draw() \{\
+	ellipse(100, 100, slider.value(), slider.value()); \
+	text(input.value(), 10, 20);   					
+\i \cf5 // create text at xy=10,20 on the canvas, controlled by the input field. 
+\i0 \cf0 \
+\}\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _OTHER INPUTS + EVENTS_\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 \
+p5.js is, among other things, a library of functions, similar to jquery, which is a popular framework for handling events. p5 shares many functions and \'91event handlers\'92 with other libraries or frameworks. \
+here are some more useful functions - mouseOver(), mouseOut(), changed(), input()\'85 each of these can handle callbacks to other functions (and indeed should be used in this way) and can interact with all dom elements. \
+\
+this is the general form for a callback: \
+ \
+var button = createButton()\
+\
+function dosomething() \{ \
+	something;\
+\}\
+\
+button.mousePressed(dosomething);       				
+\i \cf5 // this is the \'91callback\'92 to execute the function \'91dosomething\'92 on button. 
+\i0 \cf0 \
+\
+next, we are testing whether the mouse is or is not hovering over a html dom element - in this case a paragraph stored in the variable anyP - and changing the displayed text dynamically depending on state. \
+the text will initally be displaying \'91is the mouse over me or not?\'92 until the mouse is moved over the text. here the p5.js object createP makes a html paragraph - so we must to refer to it using anyP.html().\
+it is important to note that if anything using / changing our html element \'91anyP\'92 is added in the draw function, it will effectively override the intended functionality as draw executes at 60 fps! \
+\
+var anyP;									        
+\i \cf5 // declare variable 
+\i0 \cf0 \
+\
+function setup() \{\
+	anyP = createP(\'91is the mouse over me or not?\'92)         
+\i \cf5 // \'91fill\'92 the variable with the html element - P, which is a paragraph.
+\i0 \cf0  \
+\
+	anyP.mouseOver(overpara);            			       
+\i \cf5 // use p5.js event handlers mouseOver and mouseOut to test the state of the users mouse. the functions over/outpara will then call back to our paragraph and execute
+\i0 \cf0 \
+	anyP.mouseOut(outpara);\
+\}\
+\
+function overpara() \{\
+	anyP.html(\'91yes the mouse is over me.\'92);\
+\}\
+\
+function outpara() \{\
+	anyP.html(\'91the mouse is way over there.\'92);\
+\}\
+\
+function draw() \{\
+\
+\}\
+\
+- - - - - \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\i \cf6 changed\cf0 () and \cf7 input\cf0 () \'85
+\i0 \
+- - - - -\
+these two are special functions that pass through the value of, say, a slider or a text box: \
+\
+	1. only when user 
+\i \cf7 input
+\i0 \cf0  is happening\
+	2. only when the input has finished - and the input state has 
+\i \cf6 changed 
+\i0 \cf0 (sorta like a doneaction in supercollider) \
+ \
+var textiinput\
+\
+function setup() \{\
+	texiinput.changed(updateText);					
+\i \cf5 //  updateText calls back to the result of the function stored in variable texiinput
+\i0 \cf0 \
+\}\
+\
+function updateText() \{\
+	anyP.html(texiinput.value());					
+\i \cf5 //  the function updateText() takes the value stored in the texiinput variable whenever data is entered
+\i0 \cf0 \
+\}\
+\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _CSS_  \
+\
+REFERENCE: {\field{\*\fldinst{HYPERLINK "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference"}}{\fldrslt mozilla}} , {\field{\*\fldinst{HYPERLINK "http://www.blooberry.com/indexdot/css/propindex/all.htm"}}{\fldrslt blooberry}}\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 \
+CSS (cascading style sheet) is a way to control the universal styling of the webpage - text size, font, colour schemes, locations of canvas on the page, etc. while this can be done within the main html file, css makes it a lot easier. \
+The \'91stylesheet\'92 is normally a seperate file - (can also be used within <style> </style> HTML tags), that we need to link together with our other bits of code. \
+CSS works on several principles. the first is the selector - in this example, the selector is \'93P\'94 meaning we will apply this CSS to any paragraph object in the HTML. Then we edit parameters - background color and font size. \
+\
+p \{ \
+	background-color: #F0F;\
+	font-size: 64;\
+\}\
+\
+if we would like to edit the style of an element dynamically (\'91on the fly\'92) from within our JS document, we have to use the form elementName.style(\'93property\'94,\'94parameter\'94); - the quotation marks are important:\
+\
+function setup () \{ \
+\
+	txt = createP(\'91some text\'92);\
+	txt.style(\'93background-color\'94,\'94pink\'94);\
+\}\
+\
+\
+we could create a function to change the style when a specific event is triggered - in this example, mousing over changes the background color of our paragraph to pink, but when the mouse is moved away from the text it reverts to black. \
+\
+function setup() \{\
+\
+	txt = createP(\'91some text\'92);\
+	txt.mouseOver(changeStyle);\
+	txt.mouseOut(revertStyle);\
+\
+\}\
+\
+function changeStyle() \{\
+\
+	txt.style(\'93background-color\'94,\'94pink\'94);\
+\}\
+\
+function revertStyle() \{\
+	\
+	txt.style(\'93backround-colour\'94,\'94black\'94);\
+\}\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _Input Events - more detail_\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 Input events deal with tracking user input. earlier we talked about the .changed and .input objects. changed changes whenever the browser deems the user to have finished an action - in this example, when they have finished typing.\
+The user is deemed to have finished typing when they have pressed enter or tab etc. \
+The next part of this example creates a slider, uses the input function to constantly update when it has been moved, and then the CSS style function to change the \'91pt\'92 of the font size to the value from slider. \
+Note that we have to add the pt string to the style call.  \
+\
+var textbox;\
+var paragraph;\
+var slider;\
+\
+function setup() \{\
+	noCanvas();								
+\i \cf5 //  noCanvas(); is a p5 function that removes the canvas. because we are only using HTML elements it is unnecessary. 
+\i0 \cf0 \
+	paragraph = createP(\'91starting text\'92);\
+	slider = createSlider(10, 64,16);					
+\i \cf5 //  createSlider creates a slider html element - with (min, max, value, unused optional fourth argument - step size)
+\i0 \cf0 \
+	textbox = createInput(\'91enter text\'92);				
+\i \cf5 //  createInput creates a text input box html element\
+\
+	
+\i0 \cf0 textbox.changed(updateText);					
+\i \cf5 //  .changed calls back to the function updateText when the user has finished - by hitting enter or tab or clicking away (possibly?) when inside the box. 
+\i0 \cf0 \
+	slider.input(updateSize);						
+\i \cf5 //  .input calls back to the function updateSize whenever the user moves the slider. 
+\i0 \cf0 \
+\}\
+\
+function updateText() \{\
+	paragraph.html(textbox.value());\
+\}\
+\
+function updateSize() \{\
+	paragraph.style(\'93font-size\'94, slider.value() + \'93pt\'94);		
+\i \cf5 //  because of the way the CSS style object takes parameters, we must use the \'91+\'92 operator to concatenate the string pt to our value being returned from the slider. 
+\i0 \cf0 \
+\}\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _CSS Selectors_\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 A selector, as we have already seen, is how we point to what dom element(s) we would like to affect with our css. so far we have only used one type of selector, a tag. this was in the form (html):\
+\
+<style>\
+	p \{ 										
+\i \cf5 //  example of a tag - just the dom element on its own 
+\i0 \cf0 \
+		background-color: #F0F;\
+		font-size: 64;\
+	\}\
+</style>\
+<html>\
+	<p>\
+		ayy\
+	</p>\
+</html>\
+\
+meaning, apply this style (pink background, font size 64) to 
+\i all
+\i0  paragraphs we can see in our html code. however, there are two more important selectors - ID, and class. ID applies only to one specific html element, like so:\
+\
+<head>\
+	<style>\
+		#stuff \{								
+\i \cf5 //  example of an ID 
+\i0 \cf0 \
+			background-color: #F0F;\
+		\}\
+	</style>\
+</head>\
+<body>\
+	<p id=\'93stuff\'94>								
+\i \cf5 //  refer to the ID in the dom element 
+\i0 \cf0 \
+		some stuff. 							\
+	</p>\
+</body>\
+\
+whereas class we would use to refer to a group of elements (but not every single one). the class is written in the form .class \
+\
+<head>\
+	<style>\
+		.classthings \{							
+\i \cf5 //  example of a class 
+\i0 \cf0 \
+			font-size: 128;\
+		\}\
+	</style>\
+</head>\
+<body>\
+	<p class=\'93classthings\'94>\
+		class and things\
+	</p>\
+</body>\
+\
+sometimes, we can have things that belong to both a class and an ID. \
+\
+<head>\
+	<style>\
+		#stuff \{								
+\i \cf5 //  ID
+\i0 \cf0 \
+			background-color: #F0F;\
+		\}\
+\
+		.classthings \{							
+\i \cf5 //  class
+\i0 \cf0 \
+			font-size: 128;\
+		\}\
+\
+	</style>\
+</head>\
+<body>\
+	<p id=\'93stuff\'94 class=\'93classthings\'94>				
+\i \cf5 //  both ID and class will imbue this html with their unique style\'85 unless their type isn\'92t unique, then only the style of the ID selector will be imbued. 
+\i0 \cf0 		class things and stuff\
+	</p>\
+</body>\
+\
+in this example, the selectors we are using are referring to different style attributes (background color and font size) however, what if they were referring to the same attribute? \
+specificity wins - ID overrides class and tag, class overrides tag. tag doesn\'92t override anything :\'92( \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _CSS Select, and Select all_\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 once we have made CSS tags, classes, id\'92s, we then need some ways to refer to them in our JS code so that we can modify the style of our elements in functions, and other cool tricks. select() and selectAll() are our friends. here we use javascript to change the background colour of an element which we made somewhere else in our HTML file, and assigned a style ID \'91#idname\'92 in our CSS. \
+\
+var element;									
+\i \cf5 //  element declared globally so we can use it in our function (instead if we put it in setup e.g.- var element = select(\'91#idname\'92) this would only be local to setup)
+\i0 \cf0 \
+\
+function setup() \{ \
+	\
+	createCanvas(100,100);\
+	background(0);\
+\
+	element = select(\'91#idname\'92); 					
+\i \cf5 //  select the element by ID (single item), important to remember the #
+\i0 \cf0 \
+	element.mouseOver(changeBackground);			
+\i \cf5 //  call the function
+\i0 \cf0 \
+\}\
+\
+function changeBackground() \{\
+	element.style(\'91background-color\'92, \'91#FOF\'92);\
+\}\
+\
+so far we have only used ID, a single item. if you call select with either a tag or a class, it will only select the first one it sees. We can use selectAll(); instead to select all elements of a class or a tag. as there will normally be more than one of these, it will put them in an array. we then just need to simply loop through the array, affecting all of them.\
+\
+function setup() \{ \
+	\
+	createCanvas(100,100);\
+	background(0);\
+\
+	paragraphs = selectAll(\'91p\'92); 					
+\i \cf5 //  select the element by tag, <p>, or \'91p\'92 in css. a tag is a way of globally referring to all elements of a pre-defined type, such as a paragraph. coercely, a class is a user-defined group of elements
+\i0 \cf0 \
+	for(var i=0;  i < paragraphs.length;  i++) \{			
+\i \cf5 //  loop through our newly defined array paragraphs, and affect each element in that array, to change all of the paragraphs on our page to 24pt
+\i0 \cf0 \
+		paragraphs[i].style(\'91font-size\'92, \'9224pt\'92);\
+	\}\
+		\
+\}\
+\
+the other important takeaway here is that if we need to affect only some elements, remember we can selectAll by class instead of tag. in addition, if we are selecting by class, we can affect lots of different types of elements, whereas with tag it will apply only to elements of that particular, pre-defined type. \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _Callbacks on multiple DOM elements_\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 problems can arise when we attempt to alter more than one DOM element of the same tag, or class, at the same time. The logical way to do this would be to first use selectAll() to select by tag or class, then create and loop through an array containing all the elements of that particular tag or class, calling functions each time our condition is met, in this example mouseOver. however, due to the nature of javascript, we cannot expect this to work. what will actually happen is that the event or effect triggered by the function(s) will only apply to the first element in the array. the way around this is to use the This keyword - when we do this, P5 recognises the problem we are attempting to solve and does some behind the scenes magic so that each event can be applied to any of the elements selected. \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\i \cf0 html
+\i0 : \
+\
+<body>\
+	<p class=\'93rainbow\'94>rainbows!</p>            				                
+\i \cf5 //  this paragraph is part of the class rainbow
+\i0 \cf0 	<p id=\'93unicorn\'94 class=\'93rainbow\'94>unicorns and rainbow!</p>             
+\i \cf5 //  give this paragraph it\'92s own unique ID, but make sure it\'92s still of the class \'93rainbow\'94\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\i0 \cf0 </body>\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\i \cf0 JS
+\i0 :\
+\
+var paragraph;\
+var paragraphs;\
+\
+function setup() \{\
+	createCanvas(100,100);\
+	background(0);\
+\
+	for var i = 0; i < 100; i++) \{\
+		var par = createP(\'91rainbow\'92);                                
+\i \cf5 //  create 100 new DOM element paragraphs of the class rainbow, with random fixed positions on the screen
+\i0 \cf0 \
+		par.position(random(500),(random(500)); \
+	\}\
+\
+	paragraphs = selectAll(\'91p\'92);                                          
+\i \cf5 //  select all paragraphs 
+\i0 \cf0 \
+	// paragraphs = selectAll(\'91.rainbow\'92);                           
+\i \cf5 //  select all elements in the class rainbow (commented out)
+\i0 \cf0 \
+\
+	for (var i = 0; i < paragraphs.length; i++) \{\
+			paragraphs[i].mouseOver(highlight);\
+			paragraphs[i].mouseOut(unhighlight);      	
+\i \cf5 //  for each individual paragraph stored in the array, trigger highlight when the mouse is over that individual paragraph, and unhighlight when mouse is moved out of bounds of that individual paragraph
+\i0 \cf0 \
+	\}\
+\}\
+\
+function highlight() \{\
+	this.style(\'91padding\'92,\'9216pt\'92);					       
+\i \cf5 //  inside the functions to highlight and unhighlight, we use the THIS keyword, so that the compiler knows we are only talking about one specific, individual element of the array at a time as they are moused over. 
+\i0 \cf0 \
+	this.style(\'91baground-color\'92, \'91#F0F\'92);\
+\}\
+\
+function unhighlight() \{\
+	this.style(\'91padding\'92,\'920pt\'92);\
+	this.style(\'91baground-color\'92, \'91#FFF\'92);\
+\}\
+\
+the \'91this\'92 keyword is really important in lots of cases in JS. In this context, it\'92s use is specially understood by P5 to be about solving this kind of problem of function concurrency (?) on multiple elements of the same class within an array. Other frameworks may have different ways of dealing with this kind of issue, and there are other ways around this issue in pure JS. \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _Parent and Child functions_\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 The two functions parent() and child() are ways to insert a DOM element into the page in a particular spot. this is done by assigning a child, to a parent element in the html. so if we have three adjacent paragraphs, <p1>, <p2> and <p3>, and we want our DOM element to be inside <p2>, we would give p2 an ID, assign a variable to our element, and then use the parent() function within our JS to assign that variable to point to the paragraph 2\'92s ID.\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\i \cf0 html
+\i0 :\
+\
+<body>\
+	<p1> some stu</p1>\
+	<p2 id=\'93idname\'94>some stuf</p2>\
+	<p3> stuff some</p3>\
+</body>\
+\
+
+\i JS
+\i0 :\
+\
+function setup() \{\
+	var somecanvas = createCanvas(400,400);\
+	somecanvas.parent(\'91idname\'92);					
+\i \cf5 //  doesn\'92t need the # because p5 already assumes this is referring to an ID. 
+\i0 \cf0 \
+\}\
+\
+here is a more complex example of making DOM elements on the fly, using JS, and inserting them into the HTML, in this case an ordered list. \
+\
+
+\i html:
+\i0 \
+\
+<body>\
+\
+	<h1>List of happy things</h1>\
+		<button id=\'93button\'94>make a happy thing</button>\
+		<ol id=\'93happylist\'94>\
+		</ol>\
+\
+</body>\
+\
+\
+
+\i JS
+\i0 :\
+\
+var happy = [\'91cheese\'92,\'92nintendo\'92,\'92sunshine\'92,\'92puppies\'92];		
+\i \cf5 //  initialise our named array of items 
+\i0 \cf0 \
+\
+function setup() \{\
+	noCanvas();								
+\i \cf5 //  doesn\'92t need canvas or draw
+\i0 \cf0 \
+	var button = select(\'91#button\'92);					
+\i \cf5 //  select the button element we made in our html by ID
+\i0 \cf0 \
+	button.mousePressed(addItem);				
+\i \cf5 //  call our add item function when the mouse is pressed within our button element
+\i0 \cf0 \
+\}\
+\
+function addItem() \{\
+	var r = floor(random(0, happy.length));			
+\i \cf5 //  randomly select between 0 and 3, floor it to make sure its a whole number, store in variable r
+\i0 \cf0 \
+	var li = createElement(\'91li\'92, happy[R]);				
+\i \cf5 //  happy[r] - randomly choose an item from our array happy and store it in li. li is the html element for a single item in a list. we use the generic P5 createElement function and assign it to a \'91li\'92 element.
+\i0 \cf0 \
+	li.parent(\'93happylist\'94);							
+\i \cf5 //  our listed variable is assigned as a child to the parent list \'93happylist\'94. 
+\i0 \cf0 \
+\}\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf3 _Assigning a CSS class dynamically_\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 Dynamically add a class to an object / element created in our js code by doing something.class = \'91theclass\'92; instead of first adding it in html and later referring to it. It is important to remember, however, that DOM elements can belong to more than one class at once. When changing an elements class, to avoid confusion make sure to use this.removeClass(); first, so that we do not for example have a mishmash of 2 classes CSS properties.\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\i \cf0 html:
+\i0 \
+\
+<body>\
+	<head>\
+		<style>\
+			.apple \{							
+\i \cf5 //  create two classes, .apple and .blueberry with different background colours. 
+\i0 \cf0 \
+				font-size: 24pt;\
+				background-color: #F00;			\
+				color: #FFF;\
+				padding: 24pt;\
+			\}\
+\
+			.blueberry \{\
+				font-size: 24pt;\
+				background-color: #00F;\
+				color: #FFF;\
+			\}\
+		</style>\
+	</head>\
+</body>\
+\
+\
+
+\i JS
+\i0 :\
+\
+function setup() \{\
+\
+	for (var i = 0; i < 10; i++) \{						
+\i \cf5 //  loop through an array and create 10 paragraphs of the class apples.  
+\i0 \cf0 \
+		// var p = createP(\'91apples\'92);				
+\i \cf5 //  instead of just making them\'85
+\i0 \cf0 \
+		var p = createA(\'91#\'92, \'91apples\'92);				
+\i \cf5 //  we will make them with empty anchor links. this way it is visually obvious to a user that it wants to be clicked
+\i0 \cf0 \
+		var x = floor(random(windowWidth));			
+\i \cf5 //  randomly choose x and then position on the page; assign class
+\i0 \cf0 \
+		var y = floor(random(windowHeight));\
+		p.position(x,y);\
+		p.class(\'91apple\'92);\
+	\}\
+\
+	for (var i = 0; i < 10; i++) \{						
+\i \cf5 //  do exactly the same as apple class for loop, but this time introduce a callback to a function becomeApple 
+\i0 \cf0 \
+		// var p = createP(\'91blueberries\'92);\
+		var p = createA(\'91#\'92, \'91blueberries\'92);\
+		var x = floor(random(windowWidth));\
+		var y = floor(random(windowHeight));\
+		p.position(x,y);\
+		p.class(\'91blueberry\'92);\
+		p.mousePressed(becomeApple);\
+	\}\
+	\
+\}\
+\
+function becomeApple() \{							
+\i \cf5 //  use the this.removeClass first to strip it of the blueberry and then reassign using this.class() to change when clicked to apple. 
+\i0 \cf0 \
+	this.removeClass(\'91blueberry\'92);\
+	this.class(\'91apple\'92);\
+\}\
+\
+function draw() \{\
+\
+\}\
+\
+}
